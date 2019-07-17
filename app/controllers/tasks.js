@@ -1,5 +1,6 @@
 const tasksManager = require('../services/tasksManager');
 
+const errors = require('../errors');
 const logger = require('../logger');
 
 exports.status = (req, res, next) => {
@@ -13,5 +14,8 @@ exports.status = (req, res, next) => {
         ? res.status(200).send({ id, status })
         : res.status(404).send({ id, status: 'not found' });
     })
-    .catch(next);
+    .catch(err => {
+      logger.error(err);
+      return next(errors.defaultError('Cannot retrieve task info.'));
+    });
 };

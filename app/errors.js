@@ -2,6 +2,7 @@ const {
   BAD_REQUEST,
   INTERNAL_SERVER_ERROR,
   SERVICE_UNAVAILABLE,
+  NOT_FOUND,
   UNAUTHORIZED
 } = require('http-status-codes');
 
@@ -18,3 +19,5 @@ exports.databaseError = message => parseError(message, 'database_error', SERVICE
 exports.externalError = message => parseError(message, 'external_error', SERVICE_UNAVAILABLE);
 
 exports.mailerError = message => parseError(message, 'mailer_error', SERVICE_UNAVAILABLE);
+
+exports.notFoundError = message => parseError(message, 'not_found_error', NOT_FOUND);

@@ -12,6 +12,25 @@ const processEach = (element, cb) => {
 
 const options = { timeout: 5000 };
 
+const chapterPublished = body => {
+  const $ = cheerio.load(body);
+  const text = $('#relatedheader').text();
+  return !text.match(/is not published yet/);
+};
+
+exports.validate = (manga, chapter) => {
+  const path = chapter ? `${manga}/${chapter}` : manga;
+  return request(`${rootUrl}/${path}`, options)
+    .then(body => {
+      return !chapter || chapterPublished(body);
+    })
+    .catch(err => {
+      if (err.statusCode === 404) return null;
+      logger.error(err);
+      throw errors.externalError(`Cannot validate for "${path}"`);
+    });
+};
+
 exports.search = query => {
   return request(`${rootUrl}/search/?w=${query}`, options)
     .then(body => {
@@ -54,7 +73,7 @@ exports.search = query => {
     })
     .catch(err => {
       logger.error(err);
-      throw errors.mailerError(`Cannot return search result for "${query}"`);
+      throw errors.externalError(`Cannot return search result for "${query}"`);
     });
 };
 
@@ -88,7 +107,7 @@ exports.getManga = manga => {
     })
     .catch(err => {
       logger.error(err);
-      throw errors.mailerError(`Cannot get manga "${manga}"`);
+      throw errors.externalError(`Cannot get manga "${manga}"`);
     });
 };
 
@@ -116,7 +135,7 @@ exports.getChapter = (manga, chapter) => {
     })
     .catch(err => {
       logger.error(err);
-      throw errors.mailerError(`Cannot get manga ${chapter} from "${manga}"`);
+      throw errors.externalError(`Cannot get manga ${chapter} from "${manga}"`);
     });
 };
 
@@ -144,6 +163,6 @@ exports.getPage = (manga, chapter, page) => {
     })
     .catch(err => {
       logger.error(err);
-      throw errors.mailerError(`Cannot get page ${page} from "${manga}" #${chapter}`);
+      throw errors.externalError(`Cannot get page ${page} from "${manga}" #${chapter}`);
     });
 };

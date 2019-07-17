@@ -4,6 +4,7 @@ const mangaService = require('../services/manga');
 const tasksManager = require('../services/tasksManager');
 
 const logger = require('../logger');
+const errors = require('../errors');
 const queues = require('../jobs/queues');
 const { DOWNLOAD_CHAPTER } = require('../jobs/tasks');
 
@@ -24,11 +25,16 @@ exports.downloadChapter = (req, res, next) => {
   const id = generateByTimestamp();
   const task = { id, manga, chapter, receivers, convert, status: 'pending' };
 
-  // TODO validate if manga exists first!
-
-  logger.info(`Starting download for "${manga}" #${chapter}`);
-  return tasksManager
-    .upsertTask(id, task)
+  return mangaService
+    .validate(manga, chapter)
+    .then(isValid => {
+      if (isValid) {
+        logger.info(`Starting download for "${manga}" #${chapter}`);
+        return tasksManager.upsertTask(id, task);
+      }
+      logger.info(`Chapter "${manga}" #${chapter} not found. Skipping.`);
+      return next(errors.notFoundError(`Chapter "${manga}" #${chapter} not found`));
+    })
     .then(() => {
       const options = {
         attempts: 5,
@@ -40,6 +46,7 @@ exports.downloadChapter = (req, res, next) => {
       return queues[DOWNLOAD_CHAPTER].add(task, options);
     })
     .then(() => {
+      logger.info(`Job queued to download "${manga}" #${chapter}`);
       return res.status(200).send({ id, message: 'Job queued to proccess!' });
     })
     .catch(err => {

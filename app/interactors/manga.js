@@ -37,17 +37,6 @@ function prepareDownload(directory) {
   return Promise.all(promises);
 }
 
-// exports.validate = (manga, chapter, page) => {
-//   return mangaService
-//     .getManga(manga)
-//     .then(response => {
-//       if (!response) return Promise.reject('Manga not found');
-//       if (chapter) {
-//         return mangaService
-//       }
-//     })
-// };
-
 exports.downloadChapterImages = (manga, chapter) => {
   const chapterDirectory = generateDirectory(manga, chapter);
 

@@ -8,48 +8,45 @@ const redis = require('../../libs/redis');
 const config = require('../../config');
 
 const generateBody = ({ email, link }) => `
-  <p>Hi, <b>${email}</b>!</p>
-  <p>Click on the following link to login: <a href="${link}">LOGIN</a></p>`;
+  <h1>Hi, <b>${email}</b>!</h1>
+  <p>Here is a Magic Link for you to log in: <a href="${link}">LOGIN</a></p>`;
 
-exports.login = (req, res, next) => {
-  const { email } = req.body;
+exports.login = async (req, res, next) => {
+  try {
+    const { email } = req.body;
 
-  if (!email) throw errors.defaultError('E-mail missing');
+    if (!email) {
+      return next(errors.defaultError('E-mail missing'));
+    }
 
-  const token = jwt.encode(email);
+    const isMember = await redis.sismember(config.session.whitelist, email);
 
-  const mailOptions = {
-    from: 'Manda - Manga e-mail',
-    to: email,
-    subject: 'Magic invitation',
-    html: generateBody({ email, link: `${config.hostname}/session/magic_link?token=${token}` })
-  };
+    if (!isMember) {
+      return next(errors.authError('E-mail does not belong to whitelist'));
+    }
 
-  return redis
-    .sismember(config.session.whitelist, email)
-    .then(isMember => {
-      if (!isMember) {
-        return next(errors.authError('E-mail does not belong to whitelist'));
-      }
+    const token = await jwt.encode(email);
 
-      return mailer.sendEmail(mailOptions);
-    })
-    .then(() => {
-      return res.status(200).send({
-        message: `Magic link was sent to your e-mail "${email}"`
-      });
-    })
-    .catch(err => {
-      logger.error(err);
-      return next(err);
+    const mail = await mailer.sendEmail({
+      from: 'Manda - Manga e-mail',
+      to: email,
+      subject: 'Magic invitation',
+      html: generateBody({ email, link: `${config.hostname}/session/magic_link?token=${token}` })
     });
+
+    return res.status(200).send({
+      message: `Magic link was sent to your e-mail "${mail.to}"`
+    });
+  } catch (err) {
+    logger.error(err);
+    return next(err);
+  }
 };
 
-exports.magicLink = (req, res, next) => {
-  const { token } = req.query;
-
+exports.magicLink = async (req, res, next) => {
   try {
-    const { email } = jwt.decode(token);
+    const { token } = req.query;
+    const { email } = await jwt.decode(token);
 
     if (!email) {
       return next(errors.defaultError('Invalid token, e-mail cannot be null'));
