@@ -1,6 +1,8 @@
-# manda-api
+<div align="center"><img alt="manda-app-logo" src="./assets/logo.png" /></div>
 
-manda-api
+# Manda API (WIP)
+
+API to download manga from [Manga Reader](http://www.mangareader.net), save in PDF format and sent to your e-mail.
 
 ## First steps
 
@@ -25,65 +27,19 @@ By default, the environment will be **development**, but you can easily change i
 
 The environment variables should be added to the `.env` file in the form of `NAME=VALUE`, as the following example:
 ```
-DB_USERNAME=root
-DB_PASS=superpass
-DB_PASSWORD=superpass
-PORT=8081
-CLIENTS_API=http://api.clients.example.org/
+NODE_MAILER_SERVICE
+NODE_MAILER_USER
+NODE_MAILER_PASS
+NODE_MAILER_RECEIPIENT
+NODE_API_SESSION_SECRET
+NODE_REDIS_URL
 ```
 
 **Remember not to push nor commit the `.env` file.**
 
-#### Logging
-To log useful information of your program to the console you just need to import the logger located at `app/logger`. There are two possible types of logging: `info` and `error`. You should use them depending on the type of message you want to show.
-
-Here is an example snippet:
-```
-const logger = require('/app/logger');
-...
-if (error) { 
-    logger.error('There is an error);
-} else {
-    logger.info('There is no error);
-}
-```
-
-#### Testing
-
-To run your tests you first need to config your testing database by setting the env var `DB_NAME_TEST`. as explained
-before in [Database configuration](#database-configuration). Also you need to run the migrations in this exclusive
-testing database each time you have new ones, you can do this by running the command `npm run migrations-test`.
-Once you have all the above done you can run your tests with the following command: `npm test`. For more information refeer to the documentation of [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
-
-#### Debugging
-As we know, a NodeJS application is not something easy to debug and because of that we've added the `--inspect` flag to make it simpler. Chrome DevTools will get started when running your app using the start script (`npm start`), making your debugging easier.
-
-#### REPL console
-We can use a node console with `npm run console`. There your service objects are exposed as _servicename_ + "Service". Let's suppose that we have a service `users` which has a function `getAll`. In your console you can call `usersService.getAll()` and see the result. Note that this works also with functions that return promises! To exit the console use `.exit`.
-
-#### Documentation
-Documentation will be served at `/docs`. Remember using [dictum.js](http://www.github.com/Wolox/dictum.js) package to automatically generate documentation for your endpoints. Check [this link](https://github.com/Wolox/dictum.js#chai) for further details.
-
-## Deploy
-
-#### Heroku
-Pushing the desired branch to heroku should be enough.
-For more information check: https://devcenter.heroku.com/articles/getting-started-with-nodejs#define-a-procfile.
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Run the tests (`npm test`)
-4. Commit your changes (`git commit -am 'Add some feature'`)
-5. Push to the branch (`git push origin my-new-feature`)
-6. Create new Pull Request
-
 ## About
 
-This project is maintained by [Wolox](https://github.com/wolox) and it was written by [Wolox](http://www.wolox.com.ar).
-
-![Wolox](https://raw.githubusercontent.com/Wolox/press-kit/master/logos/logo_banner.png)
+This project is written and maintained by [Emanuel Casco](https://github.com/emanuelcasco).
 
 ## License
 
