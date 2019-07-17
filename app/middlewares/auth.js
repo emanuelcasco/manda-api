@@ -1,18 +1,20 @@
-// const sessionManager = require('../services/sessionManager');
+const jwt = require('../services/jwt');
+const logger = require('../logger');
+const errors = require('../errors');
 
-// const config = require('../../config');
+const config = require('../../config');
 
-// const { header_name: AUTH_HEADER, secret: SECRET } = config.common.session;
+const { header: AUTH_HEADER } = config.session;
 
-// const authenticate = (req, res, next) => {
-//   const token = req[AUTH_HEADER];
+exports.authenticate = (req, res, next) => {
+  const token = req[AUTH_HEADER];
 
-//   return sessionManager
-//     .validate(token, SECRET)
-//     .then(user => {
-//       //asds
-//     })
-//     .catch(err => {
-//       //asds
-//     });
-// };
+  try {
+    const { email } = jwt.decode(token);
+    req.email = email;
+    return next();
+  } catch (err) {
+    logger.error(err);
+    return next(errors.authError('Unauthorized'));
+  }
+};

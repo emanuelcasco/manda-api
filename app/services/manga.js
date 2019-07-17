@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const request = require('request-promise');
 
 const logger = require('../logger');
-const { externalApiError } = require('../errors');
+const errors = require('../errors');
 
 const rootUrl = 'http://www.mangareader.net';
 
@@ -54,7 +54,7 @@ exports.search = query => {
     })
     .catch(err => {
       logger.error(err);
-      return externalApiError(`Cannot return search result for "${query}"`);
+      throw errors.mailerError(`Cannot return search result for "${query}"`);
     });
 };
 
@@ -88,7 +88,7 @@ exports.getManga = manga => {
     })
     .catch(err => {
       logger.error(err);
-      return externalApiError(`Cannot get manga "${manga}"`);
+      throw errors.mailerError(`Cannot get manga "${manga}"`);
     });
 };
 
@@ -116,7 +116,7 @@ exports.getChapter = (manga, chapter) => {
     })
     .catch(err => {
       logger.error(err);
-      return externalApiError(`Cannot get manga ${chapter} from "${manga}"`);
+      throw errors.mailerError(`Cannot get manga ${chapter} from "${manga}"`);
     });
 };
 
@@ -144,6 +144,6 @@ exports.getPage = (manga, chapter, page) => {
     })
     .catch(err => {
       logger.error(err);
-      return externalApiError(`Cannot get page ${page} from "${manga}" #${chapter}`);
+      throw errors.mailerError(`Cannot get page ${page} from "${manga}" #${chapter}`);
     });
 };

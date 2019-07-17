@@ -1,16 +1,20 @@
-// def: internalError => (string!, string!) => Error!
-const internalError = (message, internalCode) => Error({ message, internalCode });
+const {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  SERVICE_UNAVAILABLE,
+  UNAUTHORIZED
+} = require('http-status-codes');
 
-exports.DEFAULT_ERROR = 'default_error';
-exports.defaultError = message => internalError(message, exports.DEFAULT_ERROR);
+const parseError = (message, internalCode, statusCode) => ({ message, internalCode, statusCode });
 
-// Custom errors ⇩
+exports.authError = message => parseError(message, 'auth_error', UNAUTHORIZED);
 
-exports.DATABASE_ERROR = 'database_error';
-exports.databaseError = message => internalError(message, exports.DATABASE_ERROR);
+exports.defaultError = message => parseError(message, 'default_error', BAD_REQUEST);
 
-exports.EXTERNAL_API_ERROR = 'external_api__error';
-exports.externalApiError = message => internalError(message, exports.EXTERNAL_API_ERROR);
+exports.internalError = message => parseError(message, 'internal_error', INTERNAL_SERVER_ERROR);
 
-exports.MAILER_ERROR = 'mailer_error';
-exports.mailerError = message => internalError(message, exports.MAILER_ERROR);
+exports.databaseError = message => parseError(message, 'database_error', SERVICE_UNAVAILABLE);
+
+exports.externalError = message => parseError(message, 'external_error', SERVICE_UNAVAILABLE);
+
+exports.mailerError = message => parseError(message, 'mailer_error', SERVICE_UNAVAILABLE);

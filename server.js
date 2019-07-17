@@ -3,7 +3,7 @@ const app = require('./app'),
   logger = require('./app/logger');
 
 try {
-  const port = config.common.api.port || 8080;
+  const port = config.api.port || 8080;
   logger.info(`Starting app on port: ${port}`);
   app.listen(port);
 

@@ -3,7 +3,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 const logger = require('../logger');
-const { mailerError } = require('../errors');
+const errors = require('../errors');
 
 const { mailer: config } = require('../../config');
 
@@ -31,7 +31,7 @@ exports.sendEmail = mailOptions => {
     transporter.sendMail(mailOptions, (error, responseInfo) => {
       if (error) {
         logger.error(error);
-        return mailerError('Failure sending e-mail!');
+        throw errors.mailerError('Failure sending e-mail!');
       }
       logger.error('E-mail sent succesfully!');
       return resolve({ ...mailOptions, ...responseInfo });

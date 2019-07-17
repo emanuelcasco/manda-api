@@ -18,11 +18,13 @@ exports.search = (req, res, next) => {
     .catch(next);
 };
 
-exports.queueChapterToDownload = (req, res, next) => {
+exports.downloadChapter = (req, res, next) => {
   const { manga, chapter, receivers, convert } = req.body;
 
   const id = generateByTimestamp();
   const task = { id, manga, chapter, receivers, convert, status: 'pending' };
+
+  // TODO validate if manga exists first!
 
   logger.info(`Starting download for "${manga}" #${chapter}`);
   return tasksManager
@@ -44,19 +46,4 @@ exports.queueChapterToDownload = (req, res, next) => {
       logger.error(err);
       return next(err);
     });
-  // return mangaInteractor
-  //   .validateMangaChapter(manga, chapter)
-  //   .then(error => {
-  //     if (error) {
-  //       logger.warn(`Invalid request for "${manga}" #${chapter}`);
-  //       return res.status(400).send({ message: 'invalid params', error });
-  //     }
-  //     // TODO: Push message to tasks queue
-  //     return Promise.resolve(true);
-  //   })
-  //   .then(() => {
-  //     const response = { manga, chapter, status: 'pending', uri: 'url' };
-  //     return res.status(200).send(response);
-  //   })
-  //   .catch(next);
 };
